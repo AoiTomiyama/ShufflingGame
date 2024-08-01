@@ -289,7 +289,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  _shuffleSpeed: 0.5
+  _shuffleSpeed: 1
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
