@@ -15,6 +15,8 @@ public class Shuffler : MonoBehaviour
     int _height = 4;
     [SerializeField, Header("シャッフルする回数")]
     int _shuffleCount;
+    [Header("シャッフルする速度")]
+    public float _shuffleSpeed = 1f;
     [SerializeField, Header("元となるPrefab")]
     GameObject _block;
     [SerializeField, Header("アイテム毎の間隔")]
@@ -23,8 +25,6 @@ public class Shuffler : MonoBehaviour
     Ease _easing = Ease.InSine;
     [SerializeField, Header("シャッフルパターン")]
     List<UnityEvent> _actions;
-    [Header("シャッフルする速度")]
-    public float _shuffleSpeed = 0.5f;
     List<Tween> _tweens = new();
     bool _isShuffling;
     int _count;

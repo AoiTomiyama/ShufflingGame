@@ -9,7 +9,7 @@ public class ArrowInitializer : MonoBehaviour
     {
         if (_status == ButtonStatus.Correct)
         {
-            GameManager.Instance.AddScore(100);
+            GameManager.Instance.AddScore(1);
         }
         else
         {

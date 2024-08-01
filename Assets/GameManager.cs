@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     {
         _instance = this;
     }
-
     private void Start()
     {
         _shuffler = FindObjectOfType<Shuffler>();
@@ -27,7 +26,7 @@ public class GameManager : MonoBehaviour
     {
         _scoreText.DOCounter(_score, _score + score, 1);
         _score += score;
-        _shuffler._shuffleSpeed -= 0.1f;
+        _shuffler._shuffleSpeed -= 0.06f;
         _shuffler.BeginShuffle();
     }
     public void ResetScore()
