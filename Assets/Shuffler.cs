@@ -19,30 +19,30 @@ public class Shuffler : MonoBehaviour
     GameObject _block;
     [SerializeField, Header("アイテム毎の間隔")]
     float _padding;
-    [SerializeField, Header("シャッフルする速度")]
-    float _shuffleSpeed = 0.5f;
     [SerializeField, Header("シャッフル時の動き")]
     Ease _easing = Ease.InSine;
     [SerializeField, Header("シャッフルパターン")]
     List<UnityEvent> _actions;
+    [Header("シャッフルする速度")]
+    public float _shuffleSpeed = 0.5f;
     List<Tween> _tweens = new();
     bool _isShuffling;
     int _count;
     float _fadeTime = 1.1f;
     GameObject[,] _objectArray;
     GameObject _answer;
-    Image _interactionBlocker;
+    GameObject _interactionBlocker;
 
     // Start is called before the first frame update
     void Start()
     {
-        _interactionBlocker = GameObject.Find("Blocker").GetComponent<Image>();
+        _interactionBlocker = GameObject.Find("Blocker");
         BeginShuffle();
     }
-    void BeginShuffle()
+    public void BeginShuffle()
     {
+        _interactionBlocker.SetActive(true);
         _count = 0;
-        _shuffleSpeed -= 0.07f;
         if (_objectArray == null)
         {
             _objectArray = new GameObject[_width, _height];
@@ -51,7 +51,6 @@ public class Shuffler : MonoBehaviour
                 for (int j = 0; j < _height; j++)
                 {
                     _objectArray[i, j] = Instantiate(_block, transform);
-                    _objectArray[i, j].GetComponent<Image>().color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
                     _objectArray[i, j].transform.localPosition = new Vector3(i * _padding - (_width - 1) * _padding / 2, j * _padding - (_height - 1) * _padding / 2);
                 }
             }
@@ -61,11 +60,13 @@ public class Shuffler : MonoBehaviour
             for (int j = 0; j < _height; j++)
             {
                 _objectArray[i, j].name = $"FakeArrow_{i}_{j}";
+                _objectArray[i, j].GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Wrong;
             }
         }
         _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
         _answer.name = "Answer";
         _answer.GetComponent<Animator>().SetTrigger("Pulse");
+        _answer.GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Correct;
         StartCoroutine(Choose());
     }
     IEnumerator Choose()
@@ -83,6 +84,7 @@ public class Shuffler : MonoBehaviour
             }
             _actions[Random.Range(0, _actions.Count)].Invoke();
         }
+        _interactionBlocker.SetActive(false);
     }
     private void Update()
     {
@@ -140,8 +142,8 @@ public class Shuffler : MonoBehaviour
     }
     public void Reverse()
     {
-        Debug.Log("Reverse");
         string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
+        Debug.Log("Reverse" + axis);
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
@@ -164,8 +166,8 @@ public class Shuffler : MonoBehaviour
     }
     public void HalfChange()
     {
-        Debug.Log("HalfChange");
         string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
+        Debug.Log("HalfChange" + axis);
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
