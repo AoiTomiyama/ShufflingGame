@@ -31,10 +31,12 @@ public class Shuffler : MonoBehaviour
     float _fadeTime = 1.1f;
     GameObject[,] _objectArray;
     GameObject _answer;
+    Image _interactionBlocker;
 
     // Start is called before the first frame update
     void Start()
     {
+        _interactionBlocker = GameObject.Find("Blocker").GetComponent<Image>();
         BeginShuffle();
     }
     void BeginShuffle()
@@ -48,8 +50,8 @@ public class Shuffler : MonoBehaviour
             {
                 for (int j = 0; j < _height; j++)
                 {
-                    _objectArray[i, j] = Instantiate(_block, FindObjectOfType<Canvas>().transform);
-                    //_objectArray[i, j].GetComponent<SpriteRenderer>().color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
+                    _objectArray[i, j] = Instantiate(_block, transform);
+                    _objectArray[i, j].GetComponent<Image>().color = new Color(Random.Range(0f, 1f), Random.Range(0f, 1f), Random.Range(0f, 1f));
                     _objectArray[i, j].transform.localPosition = new Vector3(i * _padding - (_width - 1) * _padding / 2, j * _padding - (_height - 1) * _padding / 2);
                 }
             }
@@ -63,10 +65,7 @@ public class Shuffler : MonoBehaviour
         }
         _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
         _answer.name = "Answer";
-        _tweens.Add(_answer.GetComponent<Image>().DOColor(Color.red, _fadeTime).OnComplete(() =>
-        {
-            _tweens.Add(_answer.GetComponent<Image>().DOColor(Color.white, _fadeTime));
-        }));
+        _answer.GetComponent<Animator>().SetTrigger("Pulse");
         StartCoroutine(Choose());
     }
     IEnumerator Choose()
@@ -93,11 +92,7 @@ public class Shuffler : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            HalfChangeX();
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            HalfChangeY();
+            HalfChange();
         }
         else if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -109,20 +104,18 @@ public class Shuffler : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
-            SwapX();
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            SwapY();
+            Reverse();
         }
     }
     public void Shuffle()
     {
+        Debug.Log("Shuffle");
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
-                _tweens.Add(_objectArray[i, j].transform.DOMove(-_objectArray[i, j].transform.position, _shuffleSpeed * 1.5f).
+                var rect = _objectArray[i, j].GetComponent<RectTransform>();
+                _tweens.Add(rect.DOAnchorPos(-rect.anchoredPosition, _shuffleSpeed * 2f).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
             }
@@ -131,64 +124,62 @@ public class Shuffler : MonoBehaviour
 
     public void Rotate()
     {
+        Debug.Log("Rotate");
         int rand = Random.Range(0, 2) == 0 ? -1 : 1;
-        _tweens.Add(transform.DORotate(Vector3.forward * 180 * rand, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
+        _tweens.Add(transform.DORotate(180 * rand * Vector3.forward, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
-                _tweens.Add(_objectArray[i, j].transform.DOLocalRotate(Vector3.forward * 180 * -rand, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
+                _tweens.Add(_objectArray[i, j].transform.DOLocalRotate(180 * -rand * Vector3.forward, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
                     SetEase(_easing));
             }
         }
     }
-    public void SwapX()
+    public void Reverse()
     {
+        Debug.Log("Reverse");
+        string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
-                _tweens.Add(_objectArray[i, j].transform.DOMove(new Vector2(-_objectArray[i, j].transform.position.x, _objectArray[i, j].transform.position.y), _shuffleSpeed).
-                    SetEase(_easing).
-                    OnComplete(() => _isShuffling = false));
+                var rect = _objectArray[i, j].GetComponent<RectTransform>();
+                if (axis == "X")
+                {
+                    _tweens.Add(rect.DOAnchorPos(new Vector2(-rect.anchoredPosition.x, rect.anchoredPosition.y), _shuffleSpeed).
+                        SetEase(_easing).
+                        OnComplete(() => _isShuffling = false));
+                }
+                else
+                {
+                    _tweens.Add(rect.DOAnchorPos(new Vector2(rect.anchoredPosition.x, -rect.anchoredPosition.y), _shuffleSpeed).
+                        SetEase(_easing).
+                        OnComplete(() => _isShuffling = false));
+                }
             }
         }
     }
-    public void SwapY()
+    public void HalfChange()
     {
+        Debug.Log("HalfChange");
+        string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
-                _tweens.Add(_objectArray[i, j].transform.DOMove(new Vector2(_objectArray[i, j].transform.position.x, -_objectArray[i, j].transform.position.y), _shuffleSpeed).
-                    SetEase(_easing).
-                    OnComplete(() => _isShuffling = false));
-            }
-        }
-    }
-    public void HalfChangeX()
-    {
-        for (int i = 0; i < _width; i++)
-        {
-            for (int j = 0; j < _height; j++)
-            {
-                int indexOfX = (i < _width / 2) ? i + _width / 2 : i - _width / 2;
-                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, j].transform.position, _shuffleSpeed).
-                    SetEase(_easing).
-                    OnComplete(() => _isShuffling = false));
-            }
-        }
-    }
-    public void HalfChangeY()
-    {
-        for (int i = 0; i < _width; i++)
-        {
-            for (int j = 0; j < _height; j++)
-            {
-                int indexOfY = (j < _height / 2) ? j + _height / 2 : j - _height / 2;
-                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[i, indexOfY].transform.position, _shuffleSpeed).
+                int indexOfX = i, indexOfY = j;
+                if (axis == "X")
+                {
+                    indexOfX = (i < _width / 2) ? i + _width / 2 : i - _width / 2;
+                }
+                else
+                {
+                    indexOfY = (j < _height / 2) ? j + _height / 2 : j - _height / 2;
+                }
+                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, indexOfY].transform.position, _shuffleSpeed).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
             }
@@ -196,6 +187,7 @@ public class Shuffler : MonoBehaviour
     }
     public void Separate2x2RotateClockwise()
     {
+        Debug.Log("Separate2x2RotateClockwise");
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
