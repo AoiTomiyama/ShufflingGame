@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     int _score;
     [SerializeField]
     Text _scoreText;
+    [SerializeField]
+    Animator _sceneEffector;
     Shuffler _shuffler;
     float _defaultShuffleSpeed;
     private void Awake()
@@ -27,13 +29,13 @@ public class GameManager : MonoBehaviour
         _scoreText.DOCounter(_score, _score + score, 1);
         _score += score;
         _shuffler._shuffleSpeed -= 0.06f;
-        _shuffler.BeginShuffle();
+        _sceneEffector.Play("Correct");
     }
     public void ResetScore()
     {
         _scoreText.DOCounter(_score, 0, 1);
         _score = 0;
         _shuffler._shuffleSpeed = _defaultShuffleSpeed;
-        _shuffler.BeginShuffle();
+        _sceneEffector.Play("Mistake");
     }
 }
