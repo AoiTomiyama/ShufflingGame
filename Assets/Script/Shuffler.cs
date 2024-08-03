@@ -32,8 +32,6 @@ public class Shuffler : MonoBehaviour
     GameObject[,] _objectArray;
     GameObject _answer;
     GameObject _interactionBlocker;
-
-    // Start is called before the first frame update
     void Start()
     {
         _interactionBlocker = GameObject.Find("Blocker");
@@ -63,10 +61,13 @@ public class Shuffler : MonoBehaviour
                 _objectArray[i, j].GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Wrong;
             }
         }
-        _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
-        _answer.name = "Answer";
+        if (!_answer)
+        {
+            _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
+            _answer.name = "Answer";
+            _answer.GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Correct;
+        }
         _answer.GetComponent<Animator>().SetTrigger("Pulse");
-        _answer.GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Correct;
         StartCoroutine(Choose());
     }
     IEnumerator Choose()
