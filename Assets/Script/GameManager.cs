@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -37,5 +38,9 @@ public class GameManager : MonoBehaviour
         _score = 0;
         _shuffler._shuffleSpeed = _defaultShuffleSpeed;
         _sceneEffector.Play("Mistake");
+    }
+    public void Retry()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
