@@ -123,8 +123,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ArrowInitializer, Assembly-CSharp
+      - m_Target: {fileID: 2557632664198011431}
+        m_TargetAssemblyTypeName: ArrowButton, Assembly-CSharp
         m_MethodName: OnClicked
         m_Mode: 1
         m_Arguments:

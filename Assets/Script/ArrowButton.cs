@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 正誤判定をするスクリプト。。
+/// 正誤判定をするスクリプト。
 /// </summary>
 public class ArrowButton : MonoBehaviour
 {
