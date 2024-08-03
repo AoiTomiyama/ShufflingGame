@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BackgroundLoop : MonoBehaviour
 {
-    /// <summary>”wŒi</summary>
     [SerializeField] SpriteRenderer _backgroundSprite = null;
-    /// <summary>”wŒi‚ÌƒXƒNƒ[ƒ‹‘¬“x</summary>
     [SerializeField] float _scrollSpeedY = -1f;
     /// <summary>”wŒi‚ğƒNƒ[ƒ“‚µ‚½‚à‚Ì‚ğ“ü‚ê‚Ä‚¨‚­•Ï”</summary>
     SpriteRenderer _backgroundSpriteClone;

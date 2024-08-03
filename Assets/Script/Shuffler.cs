@@ -1,11 +1,12 @@
 using DG.Tweening;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
+/// <summary>
+/// 矢印の生成・整列・シャッフルを行う。
+/// </summary>
 
 public class Shuffler : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class Shuffler : MonoBehaviour
     [SerializeField, Header("シャッフルする回数")]
     int _shuffleCount;
     [Header("シャッフルする速度")]
-    public float _shuffleSpeed = 1f;
+    float _shuffleSpeed = 1f;
     [SerializeField, Header("元となるPrefab")]
     GameObject _block;
     [SerializeField, Header("アイテム毎の間隔")]
@@ -25,54 +26,73 @@ public class Shuffler : MonoBehaviour
     Ease _easing = Ease.InSine;
     [SerializeField, Header("シャッフルパターン")]
     List<UnityEvent> _actions;
+    /// <summary>Tween再生中にシーンをリロードした際に出る警告を抑制する用。</summary>
     List<Tween> _tweens = new();
+    /// <summary>
+    /// シャッフルしているかどうか。
+    /// OnCompleteにそのまま次のメソッドを書くと実行したときに警告が出る上に極度に重くなるためそれの回避用。
+    /// </summary>
     bool _isShuffling;
+    /// <summary>実行済のシャッフル回数。</summary>
     int _count;
-    float _fadeTime = 1.1f;
+    /// <summary>生成した矢印を保存する。</summary>
     GameObject[,] _objectArray;
+    /// <summary>答えとなる矢印。</summary>
     GameObject _answer;
+    /// <summary>シャッフル中に矢印を押させないためのブロッカー。</summary>
     GameObject _interactionBlocker;
+
+    public float ShuffleSpeed { get => _shuffleSpeed; set => _shuffleSpeed = value; }
+    public int ShuffleCount { get => _shuffleCount; set => _shuffleCount = value; }
+
     void Start()
     {
-        _interactionBlocker = GameObject.Find("Blocker");
-        BeginShuffle();
+        SetUp();
     }
-    public void BeginShuffle()
+    /// <summary>
+    /// 開始時に矢印の配置を行う。完了したらBeginShuffle()でシャッフルを開始させる。
+    /// </summary>
+    void SetUp()
     {
-        _interactionBlocker.SetActive(true);
-        _count = 0;
-        if (_objectArray == null)
+        _interactionBlocker = GameObject.Find("Blocker");
+        _objectArray = new GameObject[_width, _height];
+        for (int i = 0; i < _width; i++)
         {
-            _objectArray = new GameObject[_width, _height];
-            for (int i = 0; i < _width; i++)
+            for (int j = 0; j < _height; j++)
             {
-                for (int j = 0; j < _height; j++)
-                {
-                    _objectArray[i, j] = Instantiate(_block, transform);
-                    _objectArray[i, j].transform.localPosition = new Vector3(i * _padding - (_width - 1) * _padding / 2, j * _padding - (_height - 1) * _padding / 2);
-                }
+                _objectArray[i, j] = Instantiate(_block, transform);
+                _objectArray[i, j].transform.localPosition = new Vector3(i * _padding - (_width - 1) * _padding / 2, j * _padding - (_height - 1) * _padding / 2);
             }
         }
+
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
                 _objectArray[i, j].name = $"FakeArrow_{i}_{j}";
-                _objectArray[i, j].GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Wrong;
+                _objectArray[i, j].GetComponent<ArrowButton>().Status = ArrowButton.ButtonStatus.Wrong;
             }
         }
-        if (!_answer)
-        {
-            _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
-            _answer.name = "Answer";
-            _answer.GetComponent<ArrowInitializer>().Status = ArrowInitializer.ButtonStatus.Correct;
-        }
+        _answer = _objectArray[Random.Range(0, _width - 1), Random.Range(0, _height - 1)];
+        _answer.name = "Answer";
+        _answer.GetComponent<ArrowButton>().Status = ArrowButton.ButtonStatus.Correct;
+        BeginShuffle();
+    }
+    /// <summary>
+    /// シャッフルを開始する。
+    /// </summary>
+    public void BeginShuffle()
+    {
+        _interactionBlocker.SetActive(true);
         _answer.GetComponent<Animator>().SetTrigger("Pulse");
         StartCoroutine(Choose());
     }
+    /// <summary>
+    /// _shuffleCountの数、シャッフルのパターンをランダムに抽選する。
+    /// </summary>
     IEnumerator Choose()
     {
-        yield return new WaitForSeconds(_fadeTime * 2);
+        yield return new WaitForSeconds(2.5f);
         while (true)
         {
             while (_isShuffling) yield return null;
@@ -85,62 +105,31 @@ public class Shuffler : MonoBehaviour
             }
             _actions[Random.Range(0, _actions.Count)].Invoke();
         }
+        _count = 0;
         _interactionBlocker.SetActive(false);
     }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Separate2x2RotateClockwise();
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            HalfChange();
-        }
-        else if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Shuffle();
-        }
-        else if (Input.GetKeyDown(KeyCode.W))
-        {
-            Rotate();
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            Reverse();
-        }
-    }
-    public void Shuffle()
-    {
-        Debug.Log("Shuffle");
-        for (int i = 0; i < _width; i++)
-        {
-            for (int j = 0; j < _height; j++)
-            {
-                var rect = _objectArray[i, j].GetComponent<RectTransform>();
-                _tweens.Add(rect.DOAnchorPos(-rect.anchoredPosition, _shuffleSpeed * 2f).
-                    SetEase(_easing).
-                    OnComplete(() => _isShuffling = false));
-            }
-        }
-    }
-
+    /// <summary>
+    /// 全体を回転させるパターン。時計回りか反時計回りかはランダムで選ぶ。
+    /// </summary>
     public void Rotate()
     {
         Debug.Log("Rotate");
         int rand = Random.Range(0, 2) == 0 ? -1 : 1;
-        _tweens.Add(transform.DORotate(180 * rand * Vector3.forward, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
+        _tweens.Add(transform.DORotate(180 * rand * Vector3.forward, ShuffleSpeed * 2, RotateMode.LocalAxisAdd).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
         for (int i = 0; i < _width; i++)
         {
             for (int j = 0; j < _height; j++)
             {
-                _tweens.Add(_objectArray[i, j].transform.DOLocalRotate(180 * -rand * Vector3.forward, _shuffleSpeed * 2, RotateMode.LocalAxisAdd).
+                _tweens.Add(_objectArray[i, j].transform.DOLocalRotate(180 * -rand * Vector3.forward, ShuffleSpeed * 2, RotateMode.LocalAxisAdd).
                     SetEase(_easing));
             }
         }
     }
+    /// <summary>
+    /// 全体を線対象に反転させるパターン。X軸Y軸はランダムで選ぶ。
+    /// </summary>
     public void Reverse()
     {
         string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
@@ -152,19 +141,22 @@ public class Shuffler : MonoBehaviour
                 var rect = _objectArray[i, j].GetComponent<RectTransform>();
                 if (axis == "X")
                 {
-                    _tweens.Add(rect.DOAnchorPos(new Vector2(-rect.anchoredPosition.x, rect.anchoredPosition.y), _shuffleSpeed).
+                    _tweens.Add(rect.DOAnchorPos(new Vector2(-rect.anchoredPosition.x, rect.anchoredPosition.y), ShuffleSpeed).
                         SetEase(_easing).
                         OnComplete(() => _isShuffling = false));
                 }
                 else
                 {
-                    _tweens.Add(rect.DOAnchorPos(new Vector2(rect.anchoredPosition.x, -rect.anchoredPosition.y), _shuffleSpeed).
+                    _tweens.Add(rect.DOAnchorPos(new Vector2(rect.anchoredPosition.x, -rect.anchoredPosition.y), ShuffleSpeed).
                         SetEase(_easing).
                         OnComplete(() => _isShuffling = false));
                 }
             }
         }
     }
+    /// <summary>
+    /// 全体を半分に分けて、入れ替えるパターン。X軸Y軸はランダムで選ぶ。
+    /// </summary>
     public void HalfChange()
     {
         string axis = (Random.Range(0, 2) == 0) ? "X" : "Y";
@@ -182,12 +174,15 @@ public class Shuffler : MonoBehaviour
                 {
                     indexOfY = (j < _height / 2) ? j + _height / 2 : j - _height / 2;
                 }
-                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, indexOfY].transform.position, _shuffleSpeed).
+                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, indexOfY].transform.position, ShuffleSpeed).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
             }
         }
     }
+    /// <summary>
+    /// 全体を四分割し、それぞれの区画を時計回りに回転させるパターン。
+    /// </summary>
     public void Separate2x2RotateClockwise()
     {
         Debug.Log("Separate2x2RotateClockwise");
@@ -222,7 +217,7 @@ public class Shuffler : MonoBehaviour
                         indexOfY = j + 1;
                     }
                 }
-                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, indexOfY].transform.position, _shuffleSpeed).
+                _tweens.Add(_objectArray[i, j].transform.DOMove(_objectArray[indexOfX, indexOfY].transform.position, ShuffleSpeed).
                     SetEase(_easing).
                     OnComplete(() => _isShuffling = false));
             }
