@@ -2,6 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using unityroom.Api;
 /// <summary>
 /// スコア・リトライ機能の管理を行う。
 /// </summary>
@@ -59,11 +60,11 @@ public class GameManager : MonoBehaviour
     {
         if (_difficulty == 0)
         {
-            //ここにノーマルモードのランキング登録機能を入れる
+            UnityroomApiClient.Instance.SendScore(1, _score, ScoreboardWriteMode.HighScoreDesc);
         }
         else if (_difficulty == 1)
         {
-            //ここにハードモードのランキング登録機能を入れる
+            UnityroomApiClient.Instance.SendScore(2, _score, ScoreboardWriteMode.HighScoreDesc);
         }
         _scoreText.DOCounter(_score, 0, 1);
         _score = 0;
