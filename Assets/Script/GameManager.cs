@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     float _defaultShuffleSpeed;
     /// <summary>シャッフル回数の初期値。失敗時、シャッフル回数を初期値に戻すため記録。</summary>
     int _defaultShuffleCount;
+    public static int _difficulty;
     private void Awake()
     {
         _instance = this;
@@ -64,5 +65,12 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    /// <summary>
+    /// タイトル画面に戻る。
+    /// </summary>
+    public void ReturnToTitle()
+    {
+        SceneManager.LoadScene("Title");
     }
 }
