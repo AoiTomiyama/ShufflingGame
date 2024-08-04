@@ -45,6 +45,10 @@ public class GameManager : MonoBehaviour
         _scoreText.DOCounter(_score, _score + score, 1);
         _score += score;
         _shuffler.ShuffleSpeed -= shuffleSpeedReduction;
+        if (_shuffler.ShuffleSpeed < 0.1f)
+        {
+            _shuffler.ShuffleSpeed = _defaultShuffleSpeed;
+        }
         _shuffler.ShuffleCount++;
         _sceneEffector.Play("Correct");
     }
@@ -53,6 +57,14 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetScore()
     {
+        if (_difficulty == 0)
+        {
+            //ここにノーマルモードのランキング登録機能を入れる
+        }
+        else if (_difficulty == 1)
+        {
+            //ここにハードモードのランキング登録機能を入れる
+        }
         _scoreText.DOCounter(_score, 0, 1);
         _score = 0;
         _shuffler.ShuffleSpeed = _defaultShuffleSpeed;
