@@ -1209,6 +1209,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 99582267}
     m_Modifications:
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _name
+      value: Main
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 386447846}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: FadeOut
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: FadeInOut, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_FloatArgument
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 4240674646000552990, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

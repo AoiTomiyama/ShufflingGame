@@ -11,6 +11,8 @@ public class FadeInOut : MonoBehaviour
     Image _panel;
     [SerializeField]
     UnityEvent _onStart;
+    [SerializeField]
+    string _name;
     private void Start()
     {
         _panel = GetComponent<Image>();
@@ -23,7 +25,7 @@ public class FadeInOut : MonoBehaviour
         var c = new Color(0, 0, 0, 0);
         _panel.color = c;
         _panel.DOFade(1, duration).
-            OnComplete(() => SceneManager.LoadScene("Main"));
+            OnComplete(() => SceneManager.LoadScene(_name));
     }
     public void FadeOut(float duration)
     {

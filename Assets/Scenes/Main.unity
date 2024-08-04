@@ -526,6 +526,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1913097437}
     m_Modifications:
     - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
+      propertyPath: _name
+      value: Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 648653747537708171, guid: 1deab9c9036acb44cbca3ccb2579a4fc, type: 3}
       propertyPath: _onStart.m_PersistentCalls.m_Calls.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -6178,15 +6182,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 217378915}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ReturnToTitle
-        m_Mode: 1
+      - m_Target: {fileID: 658272156}
+        m_TargetAssemblyTypeName: FadeInOut, Assembly-CSharp
+        m_MethodName: FadeIn
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
